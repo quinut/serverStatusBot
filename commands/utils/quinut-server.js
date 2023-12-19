@@ -29,7 +29,7 @@ module.exports = {
         .setColor(color)
         .setTitle(serverIP)
         .setURL(`https://mcsrvstat.us/server/${serverIP}`)
-        .setAuthor({ name: status, iconURL: 'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6ca814282eca7172c6_icon_clyde_white_RGB.svg', url: 'https://discord.gg' })
+        .setAuthor({ name: status, iconURL: 'https://github.com/quinut/serverStatusBot/blob/master/image/%2357F287.png?raw=true', url: 'https://discord.gg' })
         .setDescription('설명')
         
       

@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('서버상태')
+		.setName('gg')
 		.setDescription('마인크래프트 서버의 상태를 확인합니다.')
 		.addStringOption(option =>
 			option.setName('ip')

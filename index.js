@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, EmbedBuilder, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
 
 
@@ -31,9 +31,9 @@ for (const folder of commandFolders) {
 
 client.once(Events.ClientReady, readyClient => {
 	console.log(`Logged in as ${readyClient.user.tag}`);
-	setInterval(() => {
-		checkServer('quinut.kro.kr');
-	}, 10000);
+	// setInterval(() => {
+	// 	checkServer('quinut.kro.kr');
+	// }, 10000);
 });
 
 
@@ -67,32 +67,32 @@ client.on(Events.InteractionCreate, async interaction => {
 client.login(token);
 
 
-function checkServer(domain) {
-	console.log('Checking!');
-	fetch(`https://api.mcsrvstat.us/3/${domain}`)
-		.then(response => response.json())
-		.then(data => {
-			if (data.online) {
-				const version = data.version;
-				const protocol = data.protocol.name;
-				const serverVersion = (data.debug.ping) ? protocol : version;
+// function checkServer(domain) {
+// 	console.log('Checking!');
+// 	fetch(`https://api.mcsrvstat.us/3/${domain}`)
+// 		.then(response => response.json())
+// 		.then(data => {
+// 			if (data.online) {
+// 				const version = data.version;
+// 				const protocol = data.protocol.name;
+// 				const serverVersion = (data.debug.ping) ? protocol : version;
 
-				const statusEmbed = new EmbedBuilder()
-					.setColor('#57F287')
-					.setTitle(domain)
-					.setURL(`https://mcsrvstat.us/server/${domain}`)
-					.setAuthor({ name: '온라인', iconURL: 'https://github.com/quinut/serverStatusBot/blob/main/image/%2357F287.png?raw=true', url: 'https://discord.gg' })
-					.setDescription('서버가 켜졌습니다.')
-				// .setThumbnail('')
-					.addFields(
-						{ name: '서버 버전', value: serverVersion, inline: true },
-					);
-				client.channels.cache.get('848435018241277955').send({ embeds: [statusEmbed] });
-				console.log('Server On!');
+// 				const statusEmbed = new EmbedBuilder()
+// 					.setColor('#57F287')
+// 					.setTitle(domain)
+// 					.setURL(`https://mcsrvstat.us/server/${domain}`)
+// 					.setAuthor({ name: '온라인', iconURL: 'https://github.com/quinut/serverStatusBot/blob/main/image/%2357F287.png?raw=true', url: 'https://discord.gg' })
+// 					.setDescription('서버가 켜졌습니다.')
+// 				// .setThumbnail('')
+// 					.addFields(
+// 						{ name: '서버 버전', value: serverVersion, inline: true },
+// 					);
+// 				client.channels.cache.get('848435018241277955').send({ embeds: [statusEmbed] });
+// 				console.log('Server On!');
 
-			}
-			else {
-				console.log('Still OFFLINE!');
-			}
-		});
-}
+// 			}
+// 			else {
+// 				console.log('Still OFFLINE!');
+// 			}
+// 		});
+// }

@@ -58,7 +58,7 @@ module.exports = {
 					const protocol = data.protocol.name;
 					const serverVersion = (data.debug.ping) ? protocol : version;
 
-
+					//	온라인
 					const statusEmbed = new EmbedBuilder()
 						.setColor('#57F287')
 						.setTitle(serverIP)
@@ -76,6 +76,8 @@ module.exports = {
 					interaction.editReply({ embeds: [statusEmbed] });
 				}
 				else {
+
+					//	오프라인
 					const statusEmbed = new EmbedBuilder()
 						.setColor('#ED4245')
 						.setTitle(serverIP)

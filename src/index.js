@@ -86,6 +86,7 @@ async function isServerOn(domain) {
 		return false;
 	}
 }
+
 function checkServer(domain) {
 	console.log('Checking!');
 

@@ -36,7 +36,7 @@ module.exports = {
 			serverIP = 'quinut.kro.kr';
 			break;
 		case '태롤':
-			serverIP = 'tjbbak.kro.kr';
+			serverIP = 'rkarbf.kro.kr';
 			break;
 		case '도메인':
 			serverIP = interaction.options.getString('domain');

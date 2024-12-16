@@ -37,11 +37,11 @@ let alreadyOn;
 
 client.once(Events.ClientReady, async readyClient => {
 	console.log(`Logged in as ${readyClient.user.tag}`);
-	alreadyOn = await isServerOn('quinut.kro.kr');
+	alreadyOn = await isServerOn('rkarbf.kro.kr');
 
 	//	반복
 	setInterval(() => {
-		checkServer('quinut.kro.kr');
+		checkServer('rkarbf.kro.kr');
 	}, 5000);
 });
 

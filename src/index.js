@@ -1,18 +1,16 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const { token } = require('./config.json');
+const { token, notiChan } = require('./config.json');
 
 
 // const mcAPI = 'https://mcapi.us/server/status?ip=';
 const mcsrvstat = 'https://api.mcsrvstat.us/3/';
-
-
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 
+// deploy commands
 client.commands = new Collection();
-
 const foldersPath = path.join(__dirname, '../commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -33,12 +31,13 @@ for (const folder of commandFolders) {
 	}
 }
 
+
 let alreadyOn;
+
+
 client.once(Events.ClientReady, async readyClient => {
 	console.log(`Logged in as ${readyClient.user.tag}`);
-
 	alreadyOn = await isServerOn('quinut.kro.kr');
-
 
 	//	반복
 	setInterval(() => {
@@ -55,7 +54,6 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (!command) {
 		console.error(`${interaction.commandName}은 존재하지 않습니다.`);
 		return;
-
 	}
 
 	try {
@@ -94,6 +92,9 @@ function checkServer(domain) {
 		.then(response => response.json())
 		.then(data => {
 			if (data.online == 1 && alreadyOn == 0) {
+				alreadyOn = 1;
+				console.log('Server On!');
+
 				const version = data.version;
 				const protocol = data.protocol.name;
 				const serverVersion = (data.debug.ping) ? protocol : version;
@@ -108,9 +109,13 @@ function checkServer(domain) {
 					.addFields(
 						{ name: '서버 버전', value: serverVersion, inline: true },
 					);
-				client.channels.cache.get('848435018241277955').send({ embeds: [statusEmbed] });
-				alreadyOn = 1;
-				console.log('Server On!');
+				// client.channels.cache.get('848435018241277955').send({ embeds: [statusEmbed] });
+				notiChan.forEach(channelId => {
+					const channel = client.channels.cache.get(channelId);
+					if (channel) {
+						channel.send({ embeds: [statusEmbed] });
+					}
+				});
 
 			}
 

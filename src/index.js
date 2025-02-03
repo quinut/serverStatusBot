@@ -73,66 +73,95 @@ client.on(Events.InteractionCreate, async interaction => {
 
 
 client.login(token);
-async function isServerOn(domain) {
-	const response = await fetch(`${mcsrvstat}${domain}`);
-	const data = await response.json();
 
-	if (data.online) {
-		return true;
+async function isServerOn(domain) {
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+	try {
+		const response = await fetch(`${mcsrvstat}${domain}`, {
+			signal: controller.signal,
+		});
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		const data = await response.json();
+		return !!data.online;
 	}
-	else {
+	catch (error) {
+		console.error(`서버 상태 확인 중 오류 발생: ${error.message}`);
 		return false;
+	}
+	finally {
+		clearTimeout(timeoutId);
 	}
 }
 
-function checkServer(domain) {
+
+async function checkServer(domain) {
 	console.log('Checking!');
 
-	fetch(`${mcsrvstat}${domain}`)
-		.then(response => response.json())
-		.then(data => {
-			if (data.online == 1 && alreadyOn == 0) {
-				alreadyOn = 1;
-				console.log('Server On!');
-
-				const version = data.version;
-				const protocol = data.protocol.name;
-				const serverVersion = (data.debug.ping) ? protocol : version;
-
-				const statusEmbed = new EmbedBuilder()
-					.setColor('#57F287')
-					.setTitle(domain)
-					.setURL(`https://mcsrvstat.us/server/${domain}`)
-					.setAuthor({ name: '온라인', iconURL: 'https://github.com/quinut/serverStatusBot/blob/main/image/%2357F287.png?raw=true', url: 'https://discord.gg' })
-					.setDescription('서버가 켜졌습니다.')
-					// .setThumbnail('')
-					.addFields(
-						{ name: '서버 버전', value: serverVersion, inline: true },
-					);
-				// client.channels.cache.get('848435018241277955').send({ embeds: [statusEmbed] });
-				notiChan.forEach(channelId => {
-					const channel = client.channels.cache.get(channelId);
-					if (channel) {
-						channel.send({ embeds: [statusEmbed] });
-					}
-				});
-
-			}
-
-			else if (data.online == 0 && alreadyOn == 1) {
-				const statusEmbed = new EmbedBuilder()
-					.setColor('#ED4245')
-					.setTitle(domain)
-					.setURL(`https://mcsrvstat.us/server/${domain}`)
-					.setAuthor({ name: '오프라인', iconURL: 'https://github.com/quinut/serverStatusBot/blob/main/image/%23ED4245.png?raw=true', url: 'https://discord.gg' })
-					.setDescription('서버가 꺼졌습니다.');
-				client.channels.cache.get('848435018241277955').send({ embeds: [statusEmbed] });
-				alreadyOn = 0;
-				console.log('Server OFF');
-			}
-			else {
-				console.log(`No Changes! (data.online: ${data.online}, alreadyOn: ${alreadyOn})`);
-			}
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), 30000);
+	try {
+		const response = await fetch(`${mcsrvstat}${domain}`, {
+			signal: controller.signal,
 		});
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		const data = await response.json();
+
+		if (data.online == 1 && alreadyOn == 0) {
+			alreadyOn = 1;
+			console.log('Server On!');
+
+			const version = data.version;
+			const protocol = data.protocol.name;
+			const serverVersion = (data.debug.ping) ? protocol : version;
+
+			const statusEmbed = new EmbedBuilder()
+				.setColor('#57F287')
+				.setTitle(domain)
+				.setURL(`https://mcsrvstat.us/server/${domain}`)
+				.setAuthor({ name: '온라인', iconURL: 'https://github.com/quinut/serverStatusBot/blob/main/image/%2357F287.png?raw=true', url: 'https://discord.gg' })
+				.setDescription('서버가 켜졌습니다.')
+				.addFields(
+					{ name: '서버 버전', value: serverVersion, inline: true },
+				);
+
+			notiChan.forEach(channelId => {
+				const channel = client.channels.cache.get(channelId);
+				if (channel) {
+					channel.send({ embeds: [statusEmbed] });
+				}
+			});
+		}
+		else if (data.online == 0 && alreadyOn == 1) {
+			const statusEmbed = new EmbedBuilder()
+				.setColor('#ED4245')
+				.setTitle(domain)
+				.setURL(`https://mcsrvstat.us/server/${domain}`)
+				.setAuthor({ name: '오프라인', iconURL: 'https://github.com/quinut/serverStatusBot/blob/main/image/%23ED4245.png?raw=true', url: 'https://discord.gg' })
+				.setDescription('서버가 꺼졌습니다.');
+			client.channels.cache.get('848435018241277955').send({ embeds: [statusEmbed] });
+			alreadyOn = 0;
+			console.log('Server OFF');
+		}
+		else {
+			console.log(`No Changes! (data.online: ${data.online}, alreadyOn: ${alreadyOn})`);
+		}
+	}
+	catch (error) {
+		console.error(`서버 상태 확인 중 오류 발생: ${error.message}`);
+		// 오류 처리 로직 추가 (예: Discord에 오류 메시지 전송)
+	}
+	finally {
+		clearTimeout(timeoutId);
+	}
 }
 
